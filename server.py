@@ -1,17 +1,13 @@
 from flask import Flask, request, render_template
-from EmotionDetection import emotion_detector
+from EmotionDetection.emotion_detection import emotion_detector
 
-app = Flask(Emotion Detector)
-
+app = Flask('Emotion Detector')
 @app.route("/emotionDetector")
 def emtn_detector():
     text_to_analyse = request.args.get('textToAnalyze')
-
-    if not text_to_analyse:
-        return "Error: No text provided", 400
-
     result = emotion_detector(text_to_analyse)
-
+    if result['dominant_emotion'] is None:
+        return "<b>Invalid text! Please try again!</b>"
     # Build formatted response
     response_string = (
         f"For the given statement, the system response is "
@@ -20,10 +16,13 @@ def emtn_detector():
         f"'fear': {result['fear']}, "
         f"'joy': {result['joy']} and "
         f"'sadness': {result['sadness']}. "
-        f"The dominant emotion is {result['dominant_emotion']}."
+        f"The dominant emotion is <b>{result['dominant_emotion']}</b>."
     )
-
     return response_string
 
+@app.route("/")
+def render_index_page():
+    return render_template('index.html')
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=5006)
